@@ -9,7 +9,13 @@ services:
     environment:
       - "discovery.type=single-node"
     volumes:
-      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
 
   logstash:
     image: logstash:7.9.3
@@ -19,7 +25,14 @@ services:
       - "4560:4560/udp"
       - "9600:9600"
     volumes:
-      - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
     restart: on-failure
     depends_on:
       - elasticsearch
@@ -29,6 +42,11 @@ services:
     container_name: kibana
     ports:
       - "5601:5601"
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
     restart: on-failure
     depends_on:
       - elasticsearch
