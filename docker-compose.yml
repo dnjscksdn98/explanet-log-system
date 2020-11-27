@@ -16,6 +16,10 @@ services:
       - type: volume
         source: elasticsearch
         target: /usr/share/elasticsearch/data
+      - type: bind
+        source: ./elastic-certificates.p12
+        target: /usr/share/elasticsearch/config/elastic-certificates.p12
+        read_only: true
 
   logstash:
     image: logstash:7.9.3
